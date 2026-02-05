@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import HTTPException, status
+import os
 
 from app.data.repositories.usuario_repository import UsuarioRepository
 from app.domain.schemas.auth_schemas import UsuarioRegister, UsuarioLogin
@@ -12,10 +13,10 @@ from app.domain.models.models import Usuario
 # Configuración de seguridad
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Configuración JWT - En producción, estas deberían estar en variables de entorno
-SECRET_KEY = "tu_clave_secreta_muy_segura_cambiala_en_produccion"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 días
+# Configuración JWT - Desde variables de entorno
+SECRET_KEY = os.getenv("SECRET_KEY", "tu_clave_secreta_muy_segura_cambiala_en_produccion")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 7)))  # 7 días por defecto
 
 class AuthService:
     
