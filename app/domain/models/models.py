@@ -3,6 +3,15 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.data.sources.database import Base # Importamos la base que acabamos de arreglar
 
+class Usuario(Base):
+    __tablename__ = 'usuarios'
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, nullable=False, index=True)
+    nombre = Column(String, nullable=False)
+    password_hash = Column(String, nullable=False)
+    fecha_registro = Column(DateTime, default=datetime.now)
+
 class Cliente(Base):
     __tablename__ = 'clientes'
 
