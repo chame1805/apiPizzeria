@@ -1,0 +1,42 @@
+services:
+  # Base de Datos
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_container_proyecto
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # PgAdmin (Interfaz)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  # TU NUEVO BACKEND (PYTHON)
+  backend:
+    build: .             # Construye usando el Dockerfile de esta carpeta
+    container_name: backend_python
+    ports:
+      - "8000:8000"      # Podrás entrar en localhost:8000
+    volumes:
+      - .:/app           # Sincroniza tu código en vivo (Hot Reload)
+    env_file:
+      - .env
+    depends_on:
+      - db               # Espera a que la DB arranque
