@@ -4,7 +4,7 @@ from datetime import datetime
 # --- PARA REGISTRO (INPUT) ---
 class UsuarioRegister(BaseModel):
     email: EmailStr
-    nombre: str
+    name: str
     password: str
 
 # --- PARA LOGIN (INPUT) ---

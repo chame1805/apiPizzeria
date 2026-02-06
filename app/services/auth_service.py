@@ -64,7 +64,7 @@ class AuthService:
         usuario = UsuarioRepository.crear_usuario(
             db=db,
             email=datos.email,
-            nombre=datos.nombre,
+            nombre=datos.name,
             password_hash=password_hash
         )
         
