@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from typing import List, Optional
 from app.domain.models.models import Cliente, Orden, DetalleOrden, Producto
 
 class OrdenRepository:
@@ -41,3 +42,25 @@ class OrdenRepository:
         
         self.db.commit()
         return orden
+    
+    def obtener_todas_ordenes(self) -> List[Orden]:
+        """Obtiene todas las órdenes con sus relaciones"""
+        return self.db.query(Orden).all()
+    
+    def obtener_orden_por_id(self, orden_id: int) -> Optional[Orden]:
+        """Obtiene una orden específica por ID"""
+        return self.db.query(Orden).filter(Orden.id == orden_id).first()
+    
+    def eliminar_orden(self, orden_id: int) -> bool:
+        """Elimina una orden y sus detalles"""
+        orden = self.obtener_orden_por_id(orden_id)
+        if not orden:
+            return False
+        
+        # Primero eliminar los detalles
+        self.db.query(DetalleOrden).filter(DetalleOrden.orden_id == orden_id).delete()
+        
+        # Luego eliminar la orden
+        self.db.delete(orden)
+        self.db.commit()
+        return True
