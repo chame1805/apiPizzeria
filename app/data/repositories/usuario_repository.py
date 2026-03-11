@@ -5,12 +5,19 @@ from typing import Optional
 class UsuarioRepository:
     
     @staticmethod
-    def crear_usuario(db: Session, email: str, nombre: str, password_hash: str) -> Usuario:
+    def crear_usuario(
+        db: Session,
+        email: str,
+        nombre: str,
+        password_hash: str,
+        rol: str = "MESERO",
+    ) -> Usuario:
         """Crea un nuevo usuario en la base de datos"""
         usuario = Usuario(
             email=email,
             nombre=nombre,
-            password_hash=password_hash
+            password_hash=password_hash,
+            rol=rol,
         )
         db.add(usuario)
         db.commit()

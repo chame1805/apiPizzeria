@@ -65,7 +65,8 @@ class AuthService:
             db=db,
             email=datos.email,
             nombre=datos.name,
-            password_hash=password_hash
+            password_hash=password_hash,
+            rol=datos.rol,
         )
         
         return usuario
@@ -91,9 +92,9 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
-        # Crear el token
+        # Crear el token (incluir rol para que los guards lo lean sin ir a BD)
         access_token = AuthService.crear_access_token(
-            data={"sub": usuario.email, "id": usuario.id}
+            data={"sub": usuario.email, "id": usuario.id, "rol": usuario.rol}
         )
         
         return usuario, access_token

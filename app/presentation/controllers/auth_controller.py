@@ -31,9 +31,9 @@ def registrar_usuario(
         # Registrar el usuario
         usuario = AuthService.registrar_usuario(db, datos)
         
-        # Generar token
+        # Generar token (incluir rol para que los guards lo lean sin ir a BD)
         access_token = AuthService.crear_access_token(
-            data={"sub": usuario.email, "id": usuario.id}
+            data={"sub": usuario.email, "id": usuario.id, "rol": usuario.rol}
         )
         
         # Preparar respuesta
@@ -41,6 +41,7 @@ def registrar_usuario(
             id=usuario.id,
             email=usuario.email,
             nombre=usuario.nombre,
+            rol=usuario.rol,
             fecha_registro=usuario.fecha_registro
         )
         
@@ -80,6 +81,7 @@ def login(
             id=usuario.id,
             email=usuario.email,
             nombre=usuario.nombre,
+            rol=usuario.rol,
             fecha_registro=usuario.fecha_registro
         )
         

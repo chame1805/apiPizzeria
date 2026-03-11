@@ -32,6 +32,7 @@ services:
   backend:
     build: .             # Construye usando el Dockerfile de esta carpeta
     container_name: backend_python
+    restart: on-failure  # Si falla por timing con la BD, se reinicia solo
     ports:
       - "8000:8000"      # Podrás entrar en localhost:8000
     volumes:

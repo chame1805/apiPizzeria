@@ -3,6 +3,9 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.data.sources.database import Base # Importamos la base que acabamos de arreglar
 
+# Roles válidos del sistema
+ROLES_VALIDOS = ("MESERO", "COCINERO", "ADMIN")
+
 class Usuario(Base):
     __tablename__ = 'usuarios'
 
@@ -10,6 +13,7 @@ class Usuario(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     nombre = Column(String, nullable=False)
     password_hash = Column(String, nullable=False)
+    rol = Column(String(20), nullable=False, default="MESERO")  # MESERO | COCINERO | ADMIN
     fecha_registro = Column(DateTime, default=datetime.now)
 
 class Cliente(Base):

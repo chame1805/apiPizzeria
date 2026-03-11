@@ -1,0 +1,8 @@
+pgdata/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.git/
+static/photos/
