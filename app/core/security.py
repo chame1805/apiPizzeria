@@ -72,3 +72,13 @@ def decode_token_ws(token: str) -> Optional[int]:
         return payload.get("id")
     except JWTError:
         return None
+
+
+def decode_token_ws_payload(token: str) -> Optional[dict]:
+    """
+    Variante para WebSocket que retorna payload completo o None si falla.
+    """
+    try:
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        return None

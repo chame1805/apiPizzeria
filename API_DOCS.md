@@ -213,7 +213,7 @@ El mesero crea una nueva orden. El estado inicial siempre es `PENDING`. Hace bro
 ---
 
 ### `GET /orders/` 🔒 Token requerido
-Devuelve las órdenes activas (`PENDING` e `IN_PROGRESS`) para la pantalla de cocina.
+Devuelve las órdenes del mesero autenticado con su estado actual real.
 
 **Headers:** `Authorization: Bearer <token>`
 
@@ -223,13 +223,23 @@ Devuelve las órdenes activas (`PENDING` e `IN_PROGRESS`) para la pantalla de co
   {
     "id": 1,
     "pizza_name": "Pepperoni",
+    "price": 139.0,
     "table_number": 5,
     "client_name": "Juan Pérez",
+    "total_paid": 200.0,
+    "change_returned": 61.0,
+    "waiter_id": 2,
     "status": "PENDING",
-    "created_at": "2026-03-10T20:00:00"
+    "created_at": "2026-03-10T20:00:00",
+    "updated_at": "2026-03-10T20:00:00"
   }
 ]
 ```
+
+---
+
+### `GET /orders/kitchen/active/` 🔒 Token requerido
+Devuelve las órdenes activas (`PENDING` e `IN_PROGRESS`) para la pantalla de cocina.
 
 ---
 
@@ -253,6 +263,7 @@ Al llegar a `COMPLETED`, notifica al mesero por WebSocket automáticamente.
 | `PENDING`     | En espera                |
 | `IN_PROGRESS` | En preparación (cocina)  |
 | `COMPLETED`   | Lista para entregar      |
+| `DELIVERED`   | Entregada al cliente     |
 
 **Respuesta `200`:**
 ```json

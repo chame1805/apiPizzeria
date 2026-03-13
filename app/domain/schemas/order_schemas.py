@@ -12,6 +12,7 @@ class OrderStatus(str, Enum):
     PENDING     = "PENDING"
     IN_PROGRESS = "IN_PROGRESS"
     COMPLETED   = "COMPLETED"
+    DELIVERED   = "DELIVERED"
 
 
 # ── INPUT ──────────────────────────────────────────────────────────────────────
@@ -84,6 +85,24 @@ class OrderCompletedItem(BaseModel):
     table_number: int
     status:       str
     updated_at:   datetime
+
+    class Config:
+        from_attributes = True
+
+
+class OrderWaiterItem(BaseModel):
+    """Item de orden para la vista principal del mesero (GET /orders/)."""
+    id:              int
+    pizza_name:      str
+    price:           float
+    client_name:     str
+    total_paid:      float
+    change_returned: float
+    waiter_id:       int
+    table_number:    int
+    status:          str
+    created_at:      datetime
+    updated_at:      datetime
 
     class Config:
         from_attributes = True

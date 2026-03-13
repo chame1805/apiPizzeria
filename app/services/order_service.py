@@ -31,6 +31,10 @@ class OrderService:
         """Retorna órdenes PENDING e IN_PROGRESS para la cocina."""
         return OrderRepository.get_active(self.db)
 
+    def get_orders_for_waiter(self, waiter_id: int) -> List[PizzaOrder]:
+        """Retorna órdenes del mesero con su estado actual real."""
+        return OrderRepository.get_by_waiter(self.db, waiter_id)
+
     def update_order_status(self, order_id: int, new_status: OrderStatus) -> PizzaOrder:
         """Cambia el estado de una orden. Lanza 404 si no existe."""
         order = OrderRepository.update_status(self.db, order_id, new_status.value)

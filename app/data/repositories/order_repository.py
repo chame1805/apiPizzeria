@@ -31,6 +31,16 @@ class OrderRepository:
         )
 
     @staticmethod
+    def get_by_waiter(db: Session, waiter_id: int) -> List[PizzaOrder]:
+        """Órdenes de un mesero con su estado actual real."""
+        return (
+            db.query(PizzaOrder)
+            .filter(PizzaOrder.waiter_id == waiter_id)
+            .order_by(PizzaOrder.created_at.desc())
+            .all()
+        )
+
+    @staticmethod
     def get_by_id(db: Session, order_id: int) -> Optional[PizzaOrder]:
         return db.query(PizzaOrder).filter(PizzaOrder.id == order_id).first()
 

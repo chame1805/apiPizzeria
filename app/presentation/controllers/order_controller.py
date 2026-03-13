@@ -21,6 +21,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.core.security import get_current_user_id, decode_token_ws
+from app.core.security import decode_token_ws_payload
 from app.core.websocket_manager import kitchen_manager, waiter_manager
 from app.data.sources.database import get_db
 from app.domain.schemas.order_schemas import (
@@ -30,6 +31,7 @@ from app.domain.schemas.order_schemas import (
     OrderResponse,
     OrderStatusResponse,
     OrderStatusUpdate,
+    OrderWaiterItem,
 )
 from app.services.order_service import OrderService
 
@@ -94,7 +96,17 @@ async def waiter_websocket(
             "updated_at":   "2026-03-10T15:30:00Z"
         }
     """
-    if token is None or decode_token_ws(token) is None:
+    if token is None:
+        await websocket.close(code=1008)
+        return
+
+    payload = decode_token_ws_payload(token)
+    if payload is None:
+        await websocket.close(code=1008)
+        return
+
+    token_user_id = payload.get("id")
+    if token_user_id is None or int(token_user_id) != waiter_id:
         await websocket.close(code=1008)
         return
 
@@ -145,16 +157,31 @@ async def create_order(
 
 @router.get(
     "/",
+    response_model=List[OrderWaiterItem],
+    summary="Órdenes del mesero autenticado con estado actual real",
+)
+def get_waiter_orders(
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(get_current_user_id),
+):
+    """
+    Devuelve las órdenes del mesero autenticado con su estado actual real.
+    """
+    service = OrderService(db)
+    return service.get_orders_for_waiter(current_user_id)
+
+
+@router.get(
+    "/kitchen/active/",
     response_model=List[OrderKitchenItem],
     summary="Órdenes activas para cocina (PENDING | IN_PROGRESS)",
 )
-def get_active_orders(
+def get_active_orders_for_kitchen(
     db: Session = Depends(get_db),
     _: int = Depends(get_current_user_id),
 ):
     """
-    Devuelve las órdenes que todavía no están COMPLETED.
-    La cocina también puede usar el WebSocket en lugar de este endpoint.
+    Devuelve las órdenes que todavía no están COMPLETED/DELIVERED.
     """
     service = OrderService(db)
     return service.get_active_orders()
@@ -184,22 +211,41 @@ async def update_order_status(
     kitchen_payload = {
         "event":      "ORDER_STATUS_CHANGED",
         "id":         order.id,
+        "order_id":   order.id,
         "status":     order.status,
+        "new_status": order.status,
+        "order_status": order.status,
         "updated_at": order.updated_at.isoformat(),
     }
     await kitchen_manager.broadcast(kitchen_payload)
+
+    waiter_status_payload = {
+        "event":      "ORDER_STATUS_CHANGED",
+        "id":         order.id,
+        "order_id":   order.id,
+        "status":     order.status,
+        "new_status": order.status,
+        "order_status": order.status,
+        "pizza_name": order.pizza_name,
+        "table_number": order.table_number,
+        "updated_at": order.updated_at.isoformat(),
+    }
+    await waiter_manager.send_to_waiter(order.waiter_id, waiter_status_payload)
 
     # Si la orden quedó COMPLETED, avisar directamente al mesero por WS
     if order.status == "COMPLETED":
         waiter_payload = {
             "event":        "ORDER_COMPLETED",
             "id":           order.id,
+            "order_id":     order.id,
             "pizza_name":   order.pizza_name,
             "price":        float(order.price),
             "total_paid":   float(order.total_paid),
             "change_returned": float(order.change_returned),
             "table_number": order.table_number,
             "status":       order.status,
+            "new_status":   order.status,
+            "order_status": order.status,
             "updated_at":   order.updated_at.isoformat(),
         }
         await waiter_manager.send_to_waiter(order.waiter_id, waiter_payload)
