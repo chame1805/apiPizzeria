@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
@@ -23,6 +24,15 @@ app = FastAPI(
     title="Pizzería API",
     description="API para la app móvil de pizzería: auth, productos, órdenes con WebSocket y perfil de mesero.",
     version="2.0.0",
+)
+
+# --- CORS ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- ARCHIVOS ESTÁTICOS (fotos de meseros) ---

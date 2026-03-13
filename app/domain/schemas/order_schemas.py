@@ -78,6 +78,9 @@ class OrderCompletedItem(BaseModel):
     """Item que ve la app del mesero en polling (GET /orders/{waiter_id}/completed/)."""
     id:           int
     pizza_name:   str
+    price:        float
+    total_paid:   float
+    change_returned: float
     table_number: int
     status:       str
     updated_at:   datetime

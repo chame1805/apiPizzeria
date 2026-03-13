@@ -87,7 +87,9 @@ class VentaService:
                 cliente_nombre=orden.cliente.nombre,
                 fecha=orden.fecha.isoformat() if orden.fecha else None,
                 total_venta=orden.total_venta,
+                precio=orden.total_venta,
                 pago_cliente=orden.pago_cliente,
+                pago=orden.pago_cliente,
                 cambio=orden.cambio,
                 estatus=orden.estatus,
                 detalles=detalles
@@ -121,7 +123,9 @@ class VentaService:
             cliente_nombre=orden.cliente.nombre,
             fecha=orden.fecha.isoformat() if orden.fecha else None,
             total_venta=orden.total_venta,
+            precio=orden.total_venta,
             pago_cliente=orden.pago_cliente,
+            pago=orden.pago_cliente,
             cambio=orden.cambio,
             estatus=orden.estatus,
             detalles=detalles

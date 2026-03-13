@@ -32,7 +32,9 @@ class OrdenResponse(BaseModel):
     cliente_nombre: str
     fecha: Optional[str]
     total_venta: float
+    precio: float
     pago_cliente: float
+    pago: float
     cambio: float
     estatus: str
     detalles: List[DetalleOrdenResponse]
