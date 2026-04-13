@@ -13,9 +13,11 @@ from app.presentation.controllers import venta_controller, auth_controller, prod
 
 # Importar los nuevos modelos para que Base los registre ANTES de create_all
 import app.domain.models.order_models  # noqa: F401 – registra PizzaOrder y WaiterProfile
+import app.domain.models.mobile_models  # noqa: F401 – registra DevicePushToken, UserLocation y MotionEvent
 
 # Importar los nuevos controllers
-from app.presentation.controllers import order_controller, waiter_controller
+from app.presentation.controllers import order_controller, waiter_controller, mobile_controller
+from app.core.firebase import init_firebase_if_configured
 
 # Crear / sincronizar tablas automáticamente
 Base.metadata.create_all(bind=engine)
@@ -40,6 +42,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 STATIC_DIR.mkdir(exist_ok=True)
 (STATIC_DIR / "photos").mkdir(exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+init_firebase_if_configured()
 
 # --- ROUTERS EXISTENTES ---
 app.include_router(venta_controller.router)
@@ -49,6 +52,7 @@ app.include_router(producto_controller.router)
 # --- ROUTERS NUEVOS ---
 app.include_router(order_controller.router)
 app.include_router(waiter_controller.router)
+app.include_router(mobile_controller.router)
 
 # --- ENDPOINT SIMPLE DE MENÚ ---
 @app.get("/menu", response_model=List[ProductoResponse])

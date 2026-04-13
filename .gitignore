@@ -22,3 +22,8 @@ pgdata/
 
 # Logs
 *.log
+
+# Credenciales Firebase / Google Cloud
+firebase-service-account.json
+*-service-account.json
+*.serviceaccount.json

@@ -34,6 +34,7 @@ from app.domain.schemas.order_schemas import (
     OrderWaiterItem,
 )
 from app.services.order_service import OrderService
+from app.services.mobile_service import MobileService
 
 router = APIRouter(prefix="/orders", tags=["Órdenes (cocina/mesero)"])
 
@@ -249,6 +250,16 @@ async def update_order_status(
             "updated_at":   order.updated_at.isoformat(),
         }
         await waiter_manager.send_to_waiter(order.waiter_id, waiter_payload)
+
+        # Notificación push móvil (FCM) si el backend está configurado.
+        mobile_service = MobileService(db)
+        if mobile_service.is_firebase_enabled():
+            mobile_service.notify_order_completed(
+                user_id=order.waiter_id,
+                order_id=order.id,
+                pizza_name=order.pizza_name,
+                table_number=order.table_number,
+            )
 
     return order
 
